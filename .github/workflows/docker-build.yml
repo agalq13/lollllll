@@ -24,7 +24,7 @@ jobs:
       uses: docker/setup-buildx-action@v2
       
       name: Debug
-         run: |
+        run: |
           pwd
           ls -la
 
