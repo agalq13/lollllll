@@ -711,8 +711,8 @@ const countResponseTokens: ProxyResHandlerWithBody = async (
     const service = req.outboundApi;
     const completion = getCompletionFromBody(req, body);
     const tokens = await countTokens({ req, completion, service });
-
-    if (req.service === "openai" || req.service === "azure") {
+    
+    if (req.service === "openai" || req.service === "azure" || req.service === "deepseek") {
       // O1 consumes (a significant amount of) invisible tokens for the chain-
       // of-thought reasoning. We have no way to count these other than to check
       // the response body.

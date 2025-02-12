@@ -71,7 +71,8 @@ export class KeyPool {
     service.update(key.hash, { isRevoked: reason === "revoked" });
     if (
       service instanceof OpenAIKeyProvider ||
-      service instanceof AnthropicKeyProvider
+      service instanceof AnthropicKeyProvider ||
+      service instanceof DeepseekKeyProvider
     ) {
       service.update(key.hash, { isOverQuota: reason === "quota" });
     }

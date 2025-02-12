@@ -38,7 +38,7 @@ export function generateModelList(service: "openai" | "azure") {
       .flatMap((k) => k.modelIds)
       .filter((id) => {
         const allowed = modelFamilies.has(getOpenAIModelFamily(id));
-        const known = ["gpt", "o1", "dall-e", "chatgpt", "text-embedding"].some(
+        const known = ["gpt", "o", "dall-e", "chatgpt", "text-embedding"].some(
           (prefix) => id.startsWith(prefix)
         );
         const isFinetune = id.includes("ft");
@@ -112,8 +112,7 @@ const openaiResponseHandler: ProxyResHandlerWithBody = async (
   const interval = (req as any)._keepAliveInterval
   if (interval) {
     clearInterval(interval);
-    const responseJson = JSON.stringify(body);
-    res.write(responseJson.substring(1));
+    res.write(JSON.stringify(body));
     res.end();
     return;
   }
@@ -184,20 +183,19 @@ openaiRouter.post(
 
 const setupChunkedTransfer: RequestHandler = (req, res, next) => {
   req.log.info("Setting chunked transfer for o1 to prevent Cloudflare timeouts")
-  if (isO1Model(req.body.model)) {
+  // Only o1 doesn't support streaming
+  if (req.body.model === "o1" || req.body.model === "o1-2024-12-17") {
     req.isChunkedTransfer = true;
     res.writeHead(200, {
       'Content-Type': 'application/json',
       'Transfer-Encoding': 'chunked'
     });
     
-    res.write('{');
-    
     // Higher values are required - otherwise Cloudflare will buffer and not pass
     // the separate chunks, which means that a >100s response will get terminated anyway
     const keepAlive = setInterval(() => {
       res.write(' '.repeat(4096));
-    }, 49_000);
+    }, 48_000);
     
     (req as any)._keepAliveInterval = keepAlive;
   }
@@ -234,8 +232,10 @@ function fixupMaxTokens(req: Request) {
   delete req.body.max_tokens;
 }
 
+// Models that support 'reasoning_effort'
+// When o1-preview and o1-mini are dead, we can just match all o* models 
 function isO1Model(model: string): boolean {
-  return model === 'o1' || model === 'o1-2024-12-17';
+  return ['o1', 'o1-2024-12-17', 'o3-mini', 'o3-mini-2025-01-31'].includes(model);
 }
 
 // most frontends don't currently support custom reasoning effort for o1

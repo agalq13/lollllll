@@ -20,6 +20,7 @@ const MODEL_FAMILY_FRIENDLY_NAME: { [f in ModelFamily]: string } = {
   gpt4o: "GPT-4o",
   o1: "OpenAI o1",
   "o1-mini": "OpenAI o1 mini",
+  "o3-mini": "OpenAI o3 mini",
   "dall-e": "DALL-E",
   claude: "Claude (Sonnet)",
   "claude-opus": "Claude (Opus)",
@@ -45,6 +46,7 @@ const MODEL_FAMILY_FRIENDLY_NAME: { [f in ModelFamily]: string } = {
   "azure-gpt4o": "Azure GPT-4o",
   "azure-o1": "Azure o1",
   "azure-o1-mini": "Azure o1 mini",
+  "azure-o3-mini": "Azure o3 mini",
   "azure-dall-e": "Azure DALL-E",
 };
 

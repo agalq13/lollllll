@@ -70,11 +70,12 @@ export const GoogleAIV1GenerateContentSchema = z
           .int()
           .optional()
           .default(16)
-          .transform((v) => Math.min(v, 8192)), // TODO: Add config
+          .transform((v) => Math.min(v, 4096)), // TODO: Add config
         candidateCount: z.literal(1).optional(),
         topP: z.number().min(0).max(1).optional(),
         topK: z.number().min(1).max(40).optional(),
         stopSequences: z.array(z.string().max(500)).max(5).optional(),
+        thinkingConfig: z.object({includeThoughts: z.boolean().optional()}).optional()
       })
       .default({}),
   })

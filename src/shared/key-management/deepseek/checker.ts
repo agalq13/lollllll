@@ -94,6 +94,7 @@ export class DeepseekKeyChecker {
         this.log.warn({ hash: key.hash }, "Key has exceeded its quota");
         this.update(key.hash, {
           isDisabled: true,
+          isOverQuota: true,
           lastChecked: Date.now(),
         });
         break;

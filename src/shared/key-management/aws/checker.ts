@@ -91,8 +91,8 @@ export class AwsKeyChecker extends KeyCheckerBase<AwsBedrockKey> {
 
   protected async testKeyOrFail(key: AwsBedrockKey) {
     const isInitialCheck = !key.lastChecked;
-	
-	// Keys with logging enabled will get rejected in the provider
+
+    // Keys with logging enabled will get rejected in the provider
     await this.checkLoggingConfiguration(key);
     if (isInitialCheck) {
       try {

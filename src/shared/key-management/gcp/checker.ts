@@ -42,7 +42,6 @@ export class GcpKeyChecker extends KeyCheckerBase<GcpKey> {
         this.invokeModel("claude-3-haiku@20240307", key, true),
         this.invokeModel("claude-3-sonnet@20240229", key, true),
         this.invokeModel("claude-3-opus@20240229", key, true),
-        this.invokeModel("claude-3-5-sonnet@20240620", key, true),
         this.invokeModel("claude-3-5-sonnet-v2@20241022", key, true),
       ];
 

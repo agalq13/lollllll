@@ -35,17 +35,21 @@ export const AnthropicV1TextSchema = AnthropicV1BaseSchema.merge(
   })
 );
 
+const AnthropicV1BaseContentSchema = z.union([
+  z.object({ type: z.literal("text"), text: z.string() }),
+  z.object({
+    type: z.literal("image"),
+    source: z.object({
+      type: z.literal("base64"),
+      media_type: z.string().max(100),
+      data: z.string(),
+    }),
+  })
+]);
+
 const AnthropicV1MessageMultimodalContentSchema = z.array(
   z.union([
-    z.object({ type: z.literal("text"), text: z.string() }),
-    z.object({
-      type: z.literal("image"),
-      source: z.object({
-        type: z.literal("base64"),
-        media_type: z.string().max(100),
-        data: z.string(),
-      }),
-    }),
+    AnthropicV1BaseContentSchema,
     z.object({
       type: z.literal("tool_use"),
       id: z.string(),
@@ -56,7 +60,10 @@ const AnthropicV1MessageMultimodalContentSchema = z.array(
       type: z.literal("tool_result"),
       tool_use_id: z.string(),
       is_error: z.boolean().optional(),
-      content: z.union([z.string(), z.object({}).passthrough()]).optional(),
+      content: z.union([
+        z.string(),
+        z.array(AnthropicV1BaseContentSchema)
+      ]).optional(),
     }),
   ])
 );
@@ -457,9 +464,25 @@ function convertOpenAIContent(
   });
 }
 
-export function containsImageContent(messages: AnthropicChatMessage[]) {
-  return messages.some(
-    ({ content }) =>
-      typeof content !== "string" && content.some((c) => c.type === "image")
-  );
+export function containsImageContent(messages: AnthropicChatMessage[]): boolean {
+  const isImage = (item: any) => item?.type === 'image';
+
+  return messages.some(msg => {
+    if (typeof msg.content === 'string') return false;
+
+    return msg.content.some(item => {
+      if (isImage(item)) return true;
+
+      if (item.type === 'tool_result') {
+        const content = item.content;
+        if (!content) return false;
+
+        if (typeof content === 'string') return false;
+        if (Array.isArray(content)) return content.some(isImage);
+        return isImage(content);
+      }
+
+      return false;
+    });
+  });
 }

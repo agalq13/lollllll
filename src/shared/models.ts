@@ -25,6 +25,7 @@ export type OpenAIModelFamily =
   | "gpt4o"
   | "o1"
   | "o1-mini"
+  | "o3-mini"
   | "dall-e";
 export type AnthropicModelFamily = "claude" | "claude-opus";
 export type GoogleAIModelFamily =
@@ -63,6 +64,7 @@ export const MODEL_FAMILIES = (<A extends readonly ModelFamily[]>(
   "gpt4o",
   "o1",
   "o1-mini",
+  "o3-mini",
   "dall-e",
   "claude",
   "claude-opus",
@@ -89,6 +91,7 @@ export const MODEL_FAMILIES = (<A extends readonly ModelFamily[]>(
   "azure-dall-e",
   "azure-o1",
   "azure-o1-mini",
+  "azure-o3-mini",
 ] as const);
 
 export const LLM_SERVICES = (<A extends readonly LLMService[]>(
@@ -115,6 +118,7 @@ export const MODEL_FAMILY_SERVICE: {
   gpt4o: "openai",
   "o1": "openai",
   "o1-mini": "openai",
+  "o3-mini": "openai",
   "dall-e": "openai",
   claude: "anthropic",
   "claude-opus": "anthropic",
@@ -134,6 +138,7 @@ export const MODEL_FAMILY_SERVICE: {
   "azure-dall-e": "azure",
   "azure-o1": "azure",
   "azure-o1-mini": "azure",
+  "azure-o3-mini": "azure",
   "gemini-flash": "google-ai",
   "gemini-pro": "google-ai",
   "gemini-ultra": "google-ai",
@@ -162,6 +167,7 @@ export const OPENAI_MODEL_FAMILY_MAP: { [regex: string]: OpenAIModelFamily } = {
   "^dall-e-\\d{1}$": "dall-e",
   "^o1-mini(-\\d{4}-\\d{2}-\\d{2})?$": "o1-mini",
   "^o1(-\\d{4}-\\d{2}-\\d{2})?$": "o1",
+  "^o3-mini(-\d{4}-\d{2}-\d{2})?$": "o3-mini",
 };
 
 export function getOpenAIModelFamily(

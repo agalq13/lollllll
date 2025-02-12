@@ -11,6 +11,7 @@ type DeepseekKeyUsage = {
 export interface DeepseekKey extends Key, DeepseekKeyUsage {
   readonly service: "deepseek";
   readonly modelFamilies: DeepseekModelFamily[];
+  isOverQuota: boolean;
 }
 
 export class DeepseekKeyProvider implements KeyProvider<DeepseekKey> {
@@ -42,6 +43,7 @@ export class DeepseekKeyProvider implements KeyProvider<DeepseekKey> {
         rateLimitedAt: 0,
         rateLimitedUntil: 0,
         "deepseekTokens": 0,
+        isOverQuota: false,
       });
     }
   }
@@ -130,6 +132,11 @@ export class DeepseekKeyProvider implements KeyProvider<DeepseekKey> {
   public recheck(): void {
     if (!this.checker || !config.checkKeys) return;
     for (const key of this.keys) {
+      this.update(key.hash, { 
+        isOverQuota: false,
+        isDisabled: false,
+        lastChecked: 0 
+      });
       void this.checker.checkKey(key);
     }
   }
