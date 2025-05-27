@@ -9,6 +9,7 @@ import os from "os";
 import childProcess from "child_process";
 import { logger } from "./logger";
 import { createBlacklistMiddleware } from "./shared/cidr";
+import { geoblockMiddleware } from "./proxy/middleware/geoblock";
 import { setupAssetsDir } from "./shared/file-storage/setup-assets-dir";
 import { keyPool } from "./shared/key-management";
 import { adminRouter } from "./admin/routes";
@@ -85,6 +86,11 @@ app.use(cors());
 
 const blacklist = createBlacklistMiddleware("IP_BLACKLIST", config.ipBlacklist);
 app.use(blacklist);
+
+if (config.GEOBLOCK_ENABLED) {
+  app.use(geoblockMiddleware);
+  logger.info("Geoblocking middleware enabled.");
+}
 
 app.use(checkOrigin);
 

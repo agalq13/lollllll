@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import dotenv from "dotenv";
 import type firebase from "firebase-admin";
+import fs from "fs";
 import path from "path";
 import pino from "pino";
 import type { LLMService, ModelFamily } from "./shared/models";
@@ -419,6 +420,9 @@ type Config = {
      */
     proxyUrl?: string;
   };
+  GEOBLOCK_ENABLED?: boolean;
+  GEOBLOCK_ALLOWED_COUNTRIES?: string[];
+  GEOBLOCK_DB_PATH?: string;
 };
 
 // To change configs, create a file called .env in the root directory.
@@ -530,6 +534,11 @@ export const config: Config = {
     interface: getEnvWithDefault("HTTP_AGENT_INTERFACE", undefined),
     proxyUrl: getEnvWithDefault("HTTP_AGENT_PROXY_URL", undefined),
   },
+  GEOBLOCK_ENABLED: getEnvWithDefault("GEOBLOCK_ENABLED", false),
+  GEOBLOCK_ALLOWED_COUNTRIES: parseCsv(
+    getEnvWithDefault("GEOBLOCK_ALLOWED_COUNTRIES", "RU")
+  ),
+  GEOBLOCK_DB_PATH: getEnvWithDefault("GEOBLOCK_DB_PATH", undefined),
 } as const;
 
 function generateSigningKey() {
@@ -682,6 +691,7 @@ export async function assertConfigIsValid() {
 export const SENSITIVE_KEYS: (keyof Config)[] = [
   "googleSheetsSpreadsheetId",
   "httpAgent",
+  "GEOBLOCK_DB_PATH",
 ];
 
 /**
